@@ -57,3 +57,9 @@ CARGO_LOG=error cargo test
 
 The name `mausam` was chosen in reference to the borrowed name
 from Persian `موسم` (mousem), and from Arabic `مَوْسِم`(mawsim). which means weather.
+
+## License
+
+`mausam` is dual-licensed under the terms of the MIT License and the Apache License 2.0.
+
+See the [LICENSE-APACHE](LICENSE-APACHE) and [LICENSE-MIT](LICENSE-MIT) files for details.

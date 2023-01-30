@@ -1,5 +1,6 @@
 //! Library for `mausam`
 
+// $ RUST_BACKTRACE=1 mausam
 mod models;
 
 use std::{env, num::ParseFloatError};
@@ -15,10 +16,10 @@ use crate::models::OpenWeatherData;
 // HACK: Can use RUST_PACKAGE name env?
 pub const APP_NAME: &str = "mausam";
 
-pub async fn run() -> anyhow::Result<()> {
+pub async fn run() -> anyhow::Result<OpenWeatherData> {
     dotenv().ok();
-    handle_get_notify_weather().await?;
-    Ok(())
+    let output = handle_get_notify_weather().await?;
+    Ok(output)
 }
 
 // $ RUST_BACKTRACE=1 mausam
@@ -33,7 +34,7 @@ note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace */
 
 // Your API key is not activated yet. Within the next couple of hours, it will be activated and
 // ready to use. https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid={API key}
-async fn handle_get_notify_weather() -> anyhow::Result<()> {
+async fn handle_get_notify_weather() -> anyhow::Result<OpenWeatherData> {
     let api_var: &str = "WEATHER_API_KEY";
     let Some(weather_api_key) = env::vars()
         .find(|(key, _)| key == &api_var) //.ok_or_else()
@@ -54,8 +55,8 @@ async fn handle_get_notify_weather() -> anyhow::Result<()> {
     let req: Response = reqwest::get(api_city).await?;
     let resp: OpenWeatherData = req.json().await?;
 
-    let weather = &resp.weather.unwrap();
-    let weather = &weather.first().unwrap();
+    let weather = &resp.weather;
+    let weather = &weather.as_ref().unwrap().first().unwrap();
     let weather_description =
         format!("{}{}", &weather.description[..1].to_uppercase(), &weather.description[1..]);
     let main = &resp.main;
@@ -69,7 +70,7 @@ async fn handle_get_notify_weather() -> anyhow::Result<()> {
         .with_icon("weather-few-clouds") // temperature-symbolic. default: alarm
         .show()?;
 
-    Ok(())
+    Ok(resp)
 }
 
 /// Convert degrees Fahrenheit to degrees Celsius.

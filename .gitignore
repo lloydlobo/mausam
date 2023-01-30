@@ -1,0 +1,5 @@
+/target
+Cargo.lock
+
+# Had local environment variables
+.env

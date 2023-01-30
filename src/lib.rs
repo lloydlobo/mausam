@@ -4,6 +4,7 @@ mod models;
 
 use std::{env, num::ParseFloatError};
 
+use anyhow::anyhow;
 use dotenv::dotenv;
 use notify_rust::{Hint, Notification};
 use reqwest::Response;
@@ -20,11 +21,33 @@ pub async fn run() -> anyhow::Result<()> {
     Ok(())
 }
 
+// $ RUST_BACKTRACE=1 mausam
+// FIXME: embed default API key for when env is not found.
+/* $ mausam
+thread 'main' panicked at 'Error {
+    context: "WEATHER_API_KEY env variable not found in /home/lloyd",
+    source: "Failed to find environment variable WEATHER_API_KEY for the current process",
+}
+>> called `Option::unwrap()` on a `None` value', /home/lloyd/Documents/01-projects/mausam/src/lib.rs:37:13
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace */
+
 // Your API key is not activated yet. Within the next couple of hours, it will be activated and
 // ready to use. https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid={API key}
 async fn handle_get_notify_weather() -> anyhow::Result<()> {
-    let weather_api_key: String =
-        env::vars().find(|(key, _)| key == "WEATHER_API_KEY").map(|(_, v)| v).unwrap();
+    let api_var: &str = "WEATHER_API_KEY";
+    let Some(weather_api_key) = env::vars()
+        .find(|(key, _)| key == &api_var) //.ok_or_else()
+        .map(|(_k, value)| value) else { {
+        let context = anyhow::format_err!(
+            "`{}` env variable not found in `{}/.env`",
+            api_var, env::current_dir().unwrap().to_str().unwrap()
+        );
+            panic!(
+                "`{:#?}`\n>> called `Option::unwrap()` on a `None` value",
+                anyhow!("Failed to find environment variable `{}` for the current process", &api_var,).context(context)
+            )
+        } };
+
     let city: &str = "London";
     let api_city =
         format!("https://api.openweathermap.org/data/2.5/weather?q={city}&appid={weather_api_key}");

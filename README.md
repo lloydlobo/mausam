@@ -4,7 +4,7 @@
 
 A weather update desktop notifier made with Rust.
 
-![mausam](https://i.imgur.com/z19OYxE.gif)
+![mausam](https://github.com/lloydlobo/mausam/blob/master/assets/demo.gif)
 
 ## Features
 

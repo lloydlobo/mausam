@@ -1,6 +1,7 @@
 //! Library for `mausam`
 
 // $ RUST_BACKTRACE=1 mausam
+
 mod models;
 
 use std::{env, num::ParseFloatError};

@@ -8,9 +8,9 @@ A weather update desktop notifier made with Rust.
 
 ## Features
 
-* Cross-platform
-* Arbitrary shell commands are supported.
-* Constant feedback about the weather updates (..and TODO: current forecasts).
+- Cross-platform
+- Arbitrary shell commands are supported.
+- Constant feedback about the weather updates (..and TODO: current forecasts).
 <!-- TODO: * Export results to various formats: CSV, JSON, Markdown, AsciiDoc. -->
 
 ## Usage
@@ -52,6 +52,12 @@ cargo install --path .
 ```sh
 CARGO_LOG=error cargo test
 ```
+
+## Troubleshooting
+
+### API key doesn't work immediately after subscribing
+
+> Your API key is not activated yet. Within the next couple of hours, it will be activated and ready to use. https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid={API key}
 
 ## Origin of the name
 

@@ -11,8 +11,8 @@ default:
 # VARIABLES
 #
 
-docker_image := "treeleaf"
-docker_container_name := 'treeleaf1'
+docker_image := "mausam"
+docker_container_name := 'mausam1'
 username := 'lloydlobo'
 
 

@@ -2,76 +2,94 @@
 
 // $ RUST_BACKTRACE=1 mausam
 
-mod models;
+use std::{env, num::ParseFloatError, path::PathBuf};
 
-use std::{env, num::ParseFloatError};
-
-use anyhow::anyhow;
+use anyhow::{anyhow, Context};
+use clap::Parser;
 use dotenv::dotenv;
 use notify_rust::{Hint, Notification};
 use reqwest::Response;
 use rust_decimal::Decimal; // use rust_decimal_macros::*;
 
-use crate::models::OpenWeatherData;
+use crate::{cli::Cli, models::OpenWeatherData};
 
 // HACK: Can use RUST_PACKAGE name env?
 pub const APP_NAME: &str = "mausam";
 
 pub async fn run() -> anyhow::Result<OpenWeatherData> {
     dotenv().ok();
-    let output = handle_get_notify_weather().await?;
-    Ok(output)
+    let mut args = Cli::parse();
+    let place = args.place.get_or_insert("London".to_string());
+    if place.is_empty() {
+        panic!("{:#?}", anyhow!("`{place}`").context("Empty string passed for place"));
+    }
+    let data = (fetch_weather_notify(place).await)
+        .map_err(|err| err.context("Failed to fetch weather"))?;
+
+    Ok(data)
 }
 
 // $ RUST_BACKTRACE=1 mausam
 // FIXME: embed default API key for when env is not found.
-/* $ mausam
-thread 'main' panicked at 'Error {
-    context: "WEATHER_API_KEY env variable not found in /home/lloyd",
-    source: "Failed to find environment variable WEATHER_API_KEY for the current process",
-}
->> called `Option::unwrap()` on a `None` value', /home/lloyd/Documents/01-projects/mausam/src/lib.rs:37:13
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace */
-
-// Your API key is not activated yet. Within the next couple of hours, it will be activated and
-// ready to use. https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid={API key}
-async fn handle_get_notify_weather() -> anyhow::Result<OpenWeatherData> {
+async fn fetch_weather_notify(query: &str) -> anyhow::Result<OpenWeatherData> {
     let api_var: &str = "WEATHER_API_KEY";
-    let Some(weather_api_key) = env::vars()
-        .find(|(key, _)| key == &api_var) //.ok_or_else()
-        .map(|(_k, value)| value) else { {
-        let context = anyhow::format_err!(
-            "`{}` env variable not found in `{}/.env`",
-            api_var, env::current_dir().unwrap().to_str().unwrap()
+    let weather_api_key: String = {
+        let dir: PathBuf = env::current_dir()?;
+        let ctx = anyhow!(
+            "`{api_var}` environment variable key not found in `{}/.env`",
+            dir.to_string_lossy()
         );
-            panic!(
-                "`{:#?}`\n>> called `Option::unwrap()` on a `None` value",
-                anyhow!("Failed to find environment variable `{}` for the current process", &api_var,).context(context)
-            )
-        } };
+        match env::var(api_var).context(ctx) {
+            Ok(k) => k,
+            Err(err) => {
+                log::error!("called `Result::unwrap()` on an `Err` value: {err:#?}");
+                eprintln!("{err}: `{}`", err.root_cause());
+                std::process::exit(1);
+            }
+        }
+    };
+    let url = format!(
+        "https://api.openweathermap.org/data/2.5/weather?q={query}&appid={weather_api_key}"
+    );
+    let data: OpenWeatherData = reqwest::get(url)
+        .await
+        .into_iter()
+        .find(|response| is_err_panic(response, query))
+        .unwrap()
+        .json()
+        .await
+        .map_err(|e| anyhow!(e).context("Failed to deserialize the response body as JSON."))?;
+    {
+        let weather = &data
+            .weather
+            .as_ref()
+            .context(anyhow!("Failed to parse weather: {:?}", &data.weather))?
+            .first()
+            .context("Failed to get first weather vec item")?;
 
-    let city: &str = "London";
-    let api_city =
-        format!("https://api.openweathermap.org/data/2.5/weather?q={city}&appid={weather_api_key}");
-    let req: Response = reqwest::get(api_city).await?;
-    let resp: OpenWeatherData = req.json().await?;
+        let weather_description =
+            format!("{}{}", &weather.description[..1].to_uppercase(), &weather.description[1..]);
+        let main = &data.main;
+        let temp = round_f32_dp(from_f_to_cel(main.temp), 2)?;
+        let (temp_min, temp_max) =
+            (from_f_to_cel(main.temp_min).floor(), from_f_to_cel(main.temp_max).ceil());
 
-    let weather = &resp.weather;
-    let weather = &weather.as_ref().unwrap().first().unwrap();
-    let weather_description =
-        format!("{}{}", &weather.description[..1].to_uppercase(), &weather.description[1..]);
-    let main = &resp.main;
-    let temp = round_f32_dp(from_f_to_cel(main.temp), 2)?;
-    let (temp_min, temp_max) =
-        (from_f_to_cel(main.temp_min).floor(), from_f_to_cel(main.temp_max).ceil());
+        NotifyData::new()
+            .with_summary(format!("{query} {temp}°C").as_str())
+            .with_body(format!("{weather_description}... {temp_min}°C / {temp_max}°C").as_str())
+            .with_icon("weather-few-clouds") // temperature-symbolic. default: alarm
+            .show()?;
+    }
 
-    NotifyData::new()
-        .with_summary(format!("{city} {temp}°C").as_str())
-        .with_body(format!("{weather_description}... {temp_min}°C / {temp_max}°C").as_str())
-        .with_icon("weather-few-clouds") // temperature-symbolic. default: alarm
-        .show()?;
+    Ok(data)
+}
 
-    Ok(resp)
+fn is_err_panic(response: &Response, query: &str) -> bool {
+    if response.status().is_client_error() {
+        let err = response.error_for_status_ref().err().unwrap().without_url();
+        panic!("{:#?}", anyhow!(err).context(format!("Failed GET request for `{query}`")));
+    }
+    true
 }
 
 /// Convert degrees Fahrenheit to degrees Celsius.
@@ -119,9 +137,9 @@ impl NotifyData {
     /// Returns a handle to a notification
     pub fn show(self) -> anyhow::Result<()> {
         Notification::new()
-            .summary(&self.summary.unwrap().as_str())
-            .body(&self.body.unwrap().as_str())
-            .icon(&self.icon.unwrap().as_str())
+            .summary(self.summary.unwrap().as_str())
+            .body(self.body.unwrap().as_str())
+            .icon(self.icon.unwrap().as_str())
             .show()?;
         Ok(())
     }

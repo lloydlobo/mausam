@@ -41,8 +41,10 @@ COPY --from=build /mausam/target/release/mausam .
 # RUN apt update && apt install vim -y
 
 # 8. Set the startup command to run our binary
-ENTRYPOINT ./mausam
+CMD ["./mausam"]
+# ENTRYPOINT ./mausam
 
+# ENTRYPOINT ./mausam
 # CMD ["./mausam"]
 # # https://stackoverflow.com/a/53897608 | How to pass arguments to Shell Script through docker run
 # # RUN chmod 755 /mausam/target/release/mausam

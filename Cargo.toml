@@ -11,7 +11,7 @@ keywords = ["cli", "api", "weather", "notification"]
 include = [
   "src/**/*",
   "Cargo.toml",
-  # "LICENSE*",
+  "LICENSE*",
   "README.md",
   # "examples/**/*"
 ]
@@ -21,6 +21,7 @@ include = [
 
 [dependencies]
 anyhow = "1.0.68"
+clap = { version = "4.1.4", features = ["derive"] }
 dotenv = "0.15.0"
 log = "0.4.17"
 notify-rust = "4.7.0"

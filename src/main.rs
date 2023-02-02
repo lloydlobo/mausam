@@ -7,6 +7,10 @@
 // ./mausam: error while loading shared libraries: libssl.so.1
 // .1: cannot open shared object file: No such file or directory
 
+mod app;
+mod cli;
+mod models;
+
 use anyhow::{anyhow, Context};
 
 // https://github.com/mitchmindtree/plutchik/blob/master/examples/test.rs
@@ -16,7 +20,7 @@ use anyhow::{anyhow, Context};
 async fn main() -> anyhow::Result<()> {
     pretty_env_logger::init();
 
-    match mausam::run().await {
+    match app::run().await {
         Ok(v) => Ok(println!("{}", serde_json::to_string_pretty(&v)?)),
         // TODO: Parse result via clap in lib::run()
         Err(e) => {

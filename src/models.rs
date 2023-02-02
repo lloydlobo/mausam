@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// JSON API response structure to expect from Open Weather API.
+/// [Reference](https://openweathermap.org/current)
 // Get types from... https://jvilk.com/MakeTypes/
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct OpenWeatherData {
@@ -89,6 +90,8 @@ pub struct WeatherEntity {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct Main {
+    /// `main.temp` Temperature.
+    /// Unit Default: Kelvin, Metric: Celsius, Imperial: Fahrenheit.
     pub temp: f32,
     pub feels_like: f32,
     pub temp_min: f32,

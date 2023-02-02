@@ -70,9 +70,9 @@ async fn fetch_weather_notify(query: &str) -> anyhow::Result<OpenWeatherData> {
         let weather_description =
             format!("{}{}", &weather.description[..1].to_uppercase(), &weather.description[1..]);
         let main = &data.main;
-        let temp = round_f32_dp(from_f_to_cel(main.temp), 2)?;
+        let temp = round_f32_dp(temp_k_to_c(main.temp), 2)?;
         let (temp_min, temp_max) =
-            (from_f_to_cel(main.temp_min).floor(), from_f_to_cel(main.temp_max).ceil());
+            (temp_k_to_c(main.temp_min).floor(), temp_k_to_c(main.temp_max).ceil());
 
         NotifyData::new()
             .with_summary(format!("{query} {temp}°C").as_str())
@@ -90,24 +90,6 @@ fn is_err_panic(response: &Response, query: &str) -> bool {
         panic!("{:#?}", anyhow!(err).context(format!("Failed GET request for `{query}`")));
     }
     true
-}
-
-/// Convert degrees Fahrenheit to degrees Celsius.
-///
-/// Formula - `(33.8°F − 32) × 5/9 = 1°C`
-fn from_f_to_cel(f: f32) -> f32 {
-    const CONSTANT_F_TO_C: f32 = 33.8;
-
-    f / CONSTANT_F_TO_C
-}
-
-/// Returns a new float with the specified number of decimal points for fractional portion.
-/// Rounding currently follows "Bankers Rounding" rules. e.g. 6.5 -> 6, 7.5 -> 8
-///
-/// # Arguments
-/// * `dp`: the number of decimal points to round to.
-fn round_f32_dp(num: f32, dp: u32) -> anyhow::Result<f32, ParseFloatError> {
-    Decimal::from_f32_retain(num).unwrap().round_dp(dp).to_string().parse::<f32>()
 }
 
 #[derive(Debug, Default)]
@@ -186,40 +168,66 @@ impl NotifyData {
     }
 }
 
-// pub enum NotifyType {
-//     Simple,
-//     Persistent,
-// }
-//
-// impl Default for NotifyType {
-//     fn default() -> Self {
-//         Self::Simple
-//     }
-// }
-//
-// // fn notify(n: NotifyType) -> anyhow::Result<()> {
-//     match n {
-//         NotifyType::Simple => {
-//             Notification::new()
-//                 .summary("Firefox News")
-//                 .body("This will almost look like a real firefox notification.")
-//                 .icon("firefox")
-//                 .show()?;
-//         }
-//         NotifyType::Persistent => {
-//             Notification::new()
-//                 .summary("Category:email")
-//                 .body(
-//                     "This has nothing to do with emails.\nIt should not go away until you \
-//                      acknowledge it.",
-//                 )
-//                 .icon("thunderbird")
-//                 .appname("thunderbird")
-//                 .hint(Hint::Category("email".to_owned()))
-//                 .hint(Hint::Resident(true)) // this is not supported by all implementations
-//                 .timeout(0) // this however is
-//                 .show()?;
-//         }
-//     }
-//     Ok(())
-// }
+/// Convert degrees Fahrenheit to degrees Celsius.
+///
+/// Formula - `(33.8°F − 32) × 5/9 = 1°C`
+///
+/// # Examples
+///
+/// ```
+/// let celsius = temp_f_to_c(33.8f32);
+/// assert_eq!(celsius, 1);
+/// ```
+fn temp_f_to_c(f: f32) -> f32 {
+    (f - 32f32) * (5f32 / 9f32)
+}
+/// Convert Kelvin to degrees Celsius.
+///
+/// Formula - `0K − 273.15 = -273.1°C`
+///
+/// # Examples
+///
+/// ```
+/// let c = temp_k_to_c(273.15_f32);
+/// assert_eq!(c, 0f32);
+/// let c = temp_k_to_c(283.15_f32);
+/// assert_eq!(c, 10f32);
+/// ```
+fn temp_k_to_c(k: f32) -> f32 {
+    k - 273.15_f32
+}
+
+/// Returns a new float with the specified number of decimal points for fractional portion.
+/// Rounding currently follows "Bankers Rounding" rules. e.g. 6.5 -> 6, 7.5 -> 8
+///
+/// # Arguments
+/// * `dp`: the number of decimal points to round to.
+fn round_f32_dp(num: f32, dp: u32) -> anyhow::Result<f32, ParseFloatError> {
+    Decimal::from_f32_retain(num).unwrap().round_dp(dp).to_string().parse::<f32>()
+}
+
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+
+    #[test]
+    fn it_f_to_c() {
+        let c = temp_f_to_c(32f32).round();
+        assert_eq!(c, 0f32);
+        let c = temp_f_to_c(33.8f32).round();
+        assert_eq!(c, 1f32);
+        let c = temp_f_to_c(50f32).round();
+        assert_eq!(c, 10f32);
+    }
+    #[test]
+    fn it_k_to_c() {
+        let c = temp_k_to_c(273.15_f32);
+        assert_eq!(c, 0f32);
+        let c = temp_k_to_c(274.15_f32);
+        assert_eq!(c, 1f32);
+        let c = temp_k_to_c(283.15_f32);
+        assert_eq!(c, 10f32);
+    }
+}

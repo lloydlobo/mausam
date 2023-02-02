@@ -15,10 +15,56 @@ A weather update desktop notifier made with Rust.
 
 ## Usage
 
+### Terminal output with API response
+
+NOTE: Default temperature is of the unit `Kelvin`.
+The response for the desktop ui notification is converted to relative `Celsius` temperature units.
+
 ```sh
-$ mausam
-London 8.3°C
-Broken clouds... 8°C/9°C
+$ mausam paris
+{
+  "coord": {
+    "lon": 2.3488,
+    "lat": 48.8534
+  },
+  "weather": [
+    {
+      "id": 804,
+      "main": "Clouds",
+      "description": "overcast clouds",
+      "icon": "04d"
+    }
+  ],
+  "base": "stations",
+  "main": {
+    "temp": 283.18,
+    "feels_like": 282.12,
+    "temp_min": 282.58,
+    "temp_max": 283.92,
+    "pressure": 1031,
+    "humidity": 72
+  },
+  "visibility": 10000,
+  "wind": {
+    "speed": 6.17,
+    "deg": 260
+  },
+  "clouds": {
+    "all": 100
+  },
+  "dt": 1675343032,
+  "sys": {
+    "type": 2,
+    "id": 2041230,
+    "country": "FR",
+    "sunrise": 1675322401,
+    "sunset": 1675356505
+  },
+  "timezone": 3600,
+  "id": 2988507,
+  "name": "Paris",
+  "cod": 200
+}
 ```
 
 ## Setup

@@ -15,8 +15,6 @@ docker_image := "mausam"
 docker_container_name := 'mausam1'
 username := 'lloydlobo'
 
-
-
 ##############################################
 ##                 DOCKER                   ##
 ##############################################
@@ -37,7 +35,7 @@ docker-run:
   docker run -dp 8080:3030 --rm --name {{docker_container_name}} {{docker_image}}
 
 # Run the binary interactively in the terminal `$ ./infinityper`
-docker-run-entrypoint:
+docker-entrypoint:
   docker run -it --rm --name {{docker_container_name}} --entrypoint bin/bash {{docker_image}}
 
 # fetches container logs & follows log output
@@ -47,7 +45,6 @@ docker-logs:
 # stop container `sample1`
 docker-stop:
   docker stop {{docker_container_name}}
-
 
 #
 # RELEASE

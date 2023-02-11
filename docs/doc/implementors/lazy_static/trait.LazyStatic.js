@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"mausam":[["impl <a class=\"trait\" href=\"https://docs.rs/lazy_static/1.4.0/lazy_static/trait.LazyStatic.html\" title=\"trait lazy_static::LazyStatic\">LazyStatic</a> for <a class=\"struct\" href=\"mausam/app/struct.IP_API_URL.html\" title=\"struct mausam::app::IP_API_URL\">IP_API_URL</a>"],["impl <a class=\"trait\" href=\"https://docs.rs/lazy_static/1.4.0/lazy_static/trait.LazyStatic.html\" title=\"trait lazy_static::LazyStatic\">LazyStatic</a> for <a class=\"struct\" href=\"mausam/app/struct.CLIENT.html\" title=\"struct mausam::app::CLIENT\">CLIENT</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

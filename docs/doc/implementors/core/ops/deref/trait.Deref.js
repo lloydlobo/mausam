@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"mausam":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"mausam/app/struct.IP_API_URL.html\" title=\"struct mausam::app::IP_API_URL\">IP_API_URL</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"mausam/app/struct.CLIENT.html\" title=\"struct mausam::app::CLIENT\">CLIENT</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

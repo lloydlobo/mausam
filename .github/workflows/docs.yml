@@ -33,11 +33,11 @@ jobs:
         uses: actions/checkout@v3
       - name: Build cargo docs in docs/doc
         run: |
-          cargo doc --no-deps --release --target-dir docs
-          # TODO: # && rm -rf docs/release && cp docs/doc docs/ && rm -rf docs/doc
-      - name: Create index.html in docs/doc
+          cargo doc --no-deps --release --target-dir docs/rustdoc
+          # TODO: # && rm -rf docs/rustdoc/release && cp docs/rustdoc/doc docs/rustdoc && rm -rf docs/rustdoc/doc
+      - name: Create index.html in docs/rustdoc/doc
         run: |
-          echo "<meta http-equiv=\"refresh\" content=\"0; url=rssh\">  \n" > ./docs/doc/index.html
+          echo "<meta http-equiv=\"refresh\" content=\"0; url=mausam\">  \n" > ./docs/rustdoc/doc/index.html
       - name: Commit and push changes
         uses: actions/github-script@v6
         with:
@@ -48,7 +48,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: "./docs/doc"
+          path: "./docs/rustdoc/doc"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1

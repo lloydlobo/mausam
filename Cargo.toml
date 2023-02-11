@@ -49,9 +49,9 @@ opt-level = 3
 lto = true
 incremental = true
 codegen-units = 1
-# debug = false    # production
+debug = false      # production
 
-debug = true # development perf & flamegraph
+# debug = true # development perf & flamegraph
 
 # cargo build --release
 # perf record -g --call-graph dwarf target/release/your-program

@@ -1,6 +1,6 @@
-//! mausam - A Rust weather notifier app
+//! `mausam` - A Rust weather notifier app
 //!
-//! mausam provides current weather updates for a given location.
+//! `mausam` provides current weather updates for a given location.
 //!
 //! ## Features
 //!
@@ -13,7 +13,7 @@
 //! Terminal outputs API response in Kelvin by default, but UI notifications are in Celsius.
 //! To get weather info for a location, run:
 //!
-//! //! $ mausam <location> //!
+//! `$ mausam <location>`
 //!
 //! Output Example:
 //!
@@ -67,21 +67,30 @@
 //! ## Setup
 //!
 //! To use mausam, you need to obtain an API key from `OpenWeatherMap`. A free account provides a
-//! generous request rate per day. Once subscribed, add the API key to your .env file:
+//! generous request rate per day. Once subscribed, add the API key to your `.env` file:
 //!
-//! //! `WEATHER_API_KEY`=<API key> //!
+//! ```text
+//! WEATHER_API_KEY`=<API key>
+//! ```
 //!
 //! ## Installation
 //!
 //! To install mausam from source, follow these steps:
 //!
-//! //! git clone https://github.com/lloydlobo/mausam.git //! cd mausam //! cargo build --release //! cargo install --path . //!
+//! ```sh
+//! git clone https://github.com/lloydlobo/mausam.git
+//! cd mausam
+//! cargo build --release
+//! cargo install --path .
+//! ```
 //!
 //! ## Development
 //!
 //! To test the code, run:
 //!
-//! //! `CARGO_LOG=error` cargo test //!
+//! ```sh
+//! CARGO_LOG=error cargo test
+//! ```
 //!
 //! ## Troubleshooting
 //!

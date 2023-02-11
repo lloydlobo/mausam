@@ -34,38 +34,43 @@ $ mausam
 
 #### Running Mausam Periodically with Cron
 
-##### Pre-requisites
+Schedule cron jobs to run on a time interval for the current user.
+More information: <https://crontab.guru/>.
 
-- To run Mausam periodically, you can use `cron` via `crontab`. Schedule cron jobs to run on a time interval for the current user. More information: <https://crontab.guru/>.
+##### Prerequisites
 
-- You will need to have Mausam installed on your system, which can be done using `cargo`, the Rust's toolchain. After installation, the binary will be stored in `/home/<YOUR_USER_NAME>/.cargo/bin/` by default.
+Before you can run Mausam periodically with cron, you must meet the following requirements:
 
-- Make sure to place the `.env` file in the `path/to/mausam` directory, as this file holds the secret `WEATHER_API_KEY`.
+- Have `crontab` installed on your system
+- Have Mausam installed on your system, which can be done using `cargo`, the Rust's toolchain. After installation, the binary will be stored in `/home/<YOUR_USER_NAME>/.cargo/bin/` by default.
+- Place the `.env` file in the `path/to/mausam` directory, as this file holds the secret `WEATHER_API_KEY`.
 
 ##### Usage with `crontab`
 
-Here's an example of how to run `mausam` every 60 minutes using `crontab`:
+To run `mausam` every 60 minutes using `crontab`, follow these steps:
 
-Edit the crontab file for the current user:
+- Edit the crontab file for the current user:
 
-```sh
-$ crontab -e
-```
+  ```sh
+  $ crontab -e
+  ```
 
-```crontab
-# Run mausam (weather notification cli) every 60 minutes
-*/60 * * * * cd ~/path/to/mausam/ && ~/.cargo/bin/mausam
-```
+- Add the following line to the file:
 
-Save the file and exit.
+  ```crontab
+  # Run mausam (weather notification cli) every 60 minutes
+  */60 * * * * cd ~/path/to/mausam/ && ~/.cargo/bin/mausam
+  ```
 
-Check status with `systemctl`:
+- Save the file and exit your editor.
 
-```sh
-systemctl status crond.service
-```
+- Check the status of `crontab` with `systemctl`:
 
-By following these steps, you can have the current weather conditions of your location, displayed as a desktop notification every hour.
+  ```sh
+  systemctl status crond.service
+  ```
+
+By following these steps, you can have the current weather conditions of your location displayed as a desktop notification every hour.
 
 ### Terminal output with API response
 

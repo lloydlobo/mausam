@@ -25,13 +25,13 @@
 //!
 //! ## Dependencies
 //!
-//! To use the mausam library crate, the following dependencies need to be added to the Cargo.toml
-//! file: ```toml
+//! To use the `app` crate, the following dependencies need to be added to the Cargo.toml file:
+//!
+//! ```ignore
 //! [dependencies]
 //! anyhow = "^1.0"
 //! tokio = { version = "0.2.22", features = ["full"] }
 //! ```
-//! 
 //! ## Dependencies used here:
 //!
 //! The end user may require the following dependencies when extending this crate:
@@ -41,16 +41,16 @@
 //! * `serde` library for deserializing the response body from the API as a struct.
 //! * The `WEATHER_API_KEY` environment variable should be set in the `.env` file.
 //!
-//! # Errors
+//! ## Errors
 //!
-//! The run function will return an error in the following cases:
+//! The `run` function will return an error in the following cases:
 //!
 //! * Failed to fetch IP API location.
 //! * Failed to parse CLI arguments.
 //! * Empty string passed for place.
 //! * Failed to fetch weather.
 //!
-//! The fetch_weather_notify function will return an error in the following cases:
+//! The `fetch_weather_notify` function will return an error in the following cases:
 //!
 //! * WEATHER_API_KEY environment variable not found in .env file.
 //! * Failed to make the request to OpenWeatherMap API.

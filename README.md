@@ -15,6 +15,30 @@ Mausam is a CLI tool that displays the current weather conditions of your locati
 - Constant feedback about the weather updates (..and TODO: current forecasts).
 <!-- TODO: * Export results to various formats: CSV, JSON, Markdown, AsciiDoc. -->
 
+## Setup
+
+### API
+
+You may get a API key from [OpenWeatherMap](https://openweathermap.org/api) for
+free for a generous request rate a day.
+
+After subscribing add it to the `.env` file as `<your API key>` without `<`/`>`.
+
+```bashls
+WEATHER_API_KEY=<your API key>
+```
+
+## Installation
+
+### From Source
+
+```sh
+git clone https://github.com/lloydlobo/mausam.git
+cd mausam
+cargo build --release
+cargo install --path .
+```
+
 ## Usage
 
 ### Introduction
@@ -119,30 +143,6 @@ $ mausam paris
   "name": "Paris",
   "cod": 200
 }
-```
-
-## Setup
-
-### API
-
-You may get a API key from [OpenWeatherMap](https://openweathermap.org/api) for
-free for a generous request rate a day.
-
-After subscribing add it to the `.env` file as `<your API key>` without `<`/`>`.
-
-```bashls
-WEATHER_API_KEY=<your API key>
-```
-
-## Installation
-
-### From Source
-
-```sh
-git clone https://github.com/lloydlobo/mausam.git
-cd mausam
-cargo build --release
-cargo install --path .
 ```
 
 ## Dev

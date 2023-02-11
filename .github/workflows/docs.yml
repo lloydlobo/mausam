@@ -39,16 +39,17 @@ jobs:
       - name: Create index.html in docs/rustdoc/doc
         run: |
           echo "<meta http-equiv=\"refresh\" content=\"0; url=mausam\">  \n" > ./docs/rustdoc/doc/index.html
-      - name: Commit and push changes
-        uses: actions/github-script@v6
-        with:
-          script: |
-            git add .
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git commit -m "docs: add index.html and build cargo docs"
-            git push origin master
-          github-token: ***
+      # - name: Commit and push changes
+      #   uses: actions/github-script@v6
+      #   with:
+      #     script: |
+      #       git add .
+      #       git config --local user.email "action@github.com"
+      #       git config --local user.name "GitHub Action"
+      #       git commit -m "docs: add index.html and build cargo docs"
+      #       git push origin master
+      # # unidentified alias "**"
+      #     github-token: ***
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact

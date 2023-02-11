@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":[["FIELDS",""]],"enum":[["__Field",""]],"struct":[["Clouds",""],["Coord",""],["Main",""],["OpenWeatherData","JSON API response structure to expect from Open Weather API. Reference"],["Sys",""],["WeatherEntity",""],["Wind",""],["__FieldVisitor",""],["__Visitor",""]]};

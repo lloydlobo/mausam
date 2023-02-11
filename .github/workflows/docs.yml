@@ -34,12 +34,12 @@ jobs:
       - name: Build cargo docs in docs/doc
         run: |
           cargo doc --no-deps --release --target-dir docs
-      # # && rm -rf docs/release && cp docs/doc docs/ && rm -rf docs/doc
+          # TODO: # && rm -rf docs/release && cp docs/doc docs/ && rm -rf docs/doc
       - name: Create index.html in docs/doc
         run: |
           echo "<meta http-equiv=\"refresh\" content=\"0; url=rssh\">  \n" > ./docs/doc/index.html
       - name: Commit and push changes
-        uses: ashleymcnamara/github-action-for-pushing-to-branches@v2
+        uses: actions/github-script@v6
         with:
           commit_message: "docs: add index.html and build cargo docs"
           branch: master

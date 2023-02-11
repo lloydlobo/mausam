@@ -99,6 +99,12 @@ cargo install --path .
 CARGO_LOG=error cargo test
 ```
 
+### PERF
+
+```sh
+$ RUST_BACKTRACE=1 mausam
+```
+
 ## Troubleshooting
 
 ### API key doesn't work immediately after subscribing

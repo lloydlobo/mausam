@@ -1,5 +1,58 @@
-//! Library for `mausam`
-// $ RUST_BACKTRACE=1 mausam
+//! mod `app` implements the main logic for the weather application.
+//!
+//! The mausam library is a simple weather application that provides the weather for a given
+//! location.
+//!
+//! # Examples
+//!
+//! ```rust,no_run
+//! use mausam::app;
+//! async fn main() {
+//!     let weather = app::run().await.unwrap();
+//!     println!("{}", weather);
+//! }
+//!
+//! ## Description
+//!
+//! * The app module uses the ipapi library to fetch the location of the user,
+//!    and passes it to the fetch_weather_notify method to get the weather data for that location.
+//! * The weather data is then used to display a notification to the user with the summary of the weather.
+//! * The OpenWeatherMap API key is retrieved from the environment variables,
+//!   and the request to the OpenWeatherMap API is made using the reqwest library.
+//! * The response body is deserialized as a OpenWeatherData struct using the serde library.
+//!
+//! ## Dependencies
+//!
+//! To use the mausam library crate, the following dependencies need to be added to the Cargo.toml file:
+//! ```toml
+//! [dependencies]
+//! anyhow = "^1.0"
+//! tokio = { version = "0.2.22", features = ["full"] }
+//! ```
+//! 
+//! ## Dependencies used here:
+//!
+//! The end user may require the following dependencies when extending this crate:
+//!
+//! * `ipapi` library for fetching the user's location.
+//! * `reqwest` library for making HTTP requests to the OpenWeatherMap API.
+//! * `serde` library for deserializing the response body from the API as a struct.
+//! * The `WEATHER_API_KEY` environment variable should be set in the `.env` file.
+//!
+//! # Errors
+//!
+//! The run function will return an error in the following cases:
+//!
+//! * Failed to fetch IP API location.
+//! * Failed to parse CLI arguments.
+//! * Empty string passed for place.
+//! * Failed to fetch weather.
+//!
+//! The fetch_weather_notify function will return an error in the following cases:
+//!
+//! * WEATHER_API_KEY environment variable not found in .env file.
+//! * Failed to make the request to OpenWeatherMap API.
+//! * Failed to deserialize the response body as JSON.
 
 mod temperature;
 
@@ -15,15 +68,30 @@ use rust_decimal::Decimal;
 
 use crate::{cli::Cli, models::OpenWeatherData};
 
-// Define the URL and the client as lazily loaded statics
 lazy_static! {
+    /// Define the URL as lazily loaded static
     pub static ref IP_API_URL: &'static str = "http://ip-api.com/json";
+    /// Define the reqwest::Client as lazily loaded static
     pub static ref CLIENT: Client = Client::new();
 }
 
 // HACK: Can use RUST_PACKAGE name env?
 pub const APP_NAME: &str = "mausam";
 
+/// `run` function is the main function for the application.
+///
+/// It loads the environment variables, retrieves the location of the user, and then gets the
+/// weather data for that location. The weather data is then returned as a
+/// `Result<OpenWeatherData>`.
+///
+/// # Errors
+///
+/// This function will return an error in the following cases:
+///
+/// * Failed to fetch IP API location.
+/// * Failed to parse CLI arguments.
+/// * Empty string passed for place.
+/// * Failed to fetch weather.
 pub async fn run() -> anyhow::Result<OpenWeatherData> {
     dotenv().ok();
 
@@ -42,7 +110,19 @@ pub async fn run() -> anyhow::Result<OpenWeatherData> {
 
     Ok(data)
 }
-
+/// `fetch_weather_notify` function fetches the weather data for a specified location.
+///
+/// It retrieves the OpenWeatherMap API key from the environment variables and then sends a request
+/// to the OpenWeatherMap API to get the weather data for the specified location. The data is then
+/// used to display a notification to the user with the summary of the weather.
+///
+/// # Errors
+///
+/// This function will return an error in the following cases:
+///
+/// * `WEATHER_API_KEY` environment variable not found in `.env` file.
+/// * Failed to make the request to OpenWeatherMap API.
+/// * Failed to deserialize the response body as JSON.
 // $ RUST_BACKTRACE=1 mausam
 // FIXME: embed default API key for when env is not found.
 async fn fetch_weather_notify(query: &str) -> anyhow::Result<OpenWeatherData> {
@@ -108,6 +188,8 @@ fn is_err_panic(response: &Response, query: &str) -> bool {
     true
 }
 
+/// Define a struct NotifyData to store the data of the notification to be shown.
+/// This is used by the show method to show the notification.
 #[derive(Debug, Default)]
 pub struct NotifyData {
     pub summary: Option<String>,
@@ -118,6 +200,7 @@ pub struct NotifyData {
     pub hints: Option<Vec<Hint>>,
 }
 
+/// Implement a method for the NotifyData struct to set the summary of the notification.
 impl NotifyData {
     pub fn new() -> Self {
         Self {
@@ -129,8 +212,7 @@ impl NotifyData {
             hints: None,
         }
     }
-
-    /// Sends Notification to D-Bus.
+    /// Sends Notification to D-Bus. Show the notification with the data stored in `NotifyData`.
     ///
     /// Returns a handle to a notification
     pub fn show(self) -> anyhow::Result<()> {
@@ -142,7 +224,7 @@ impl NotifyData {
         Ok(())
     }
 
-    /// Set the content of the `body` field.
+    /// Implement a method for the `NotifyData` struct to set the body of the notification.
     ///
     /// Multiline textual content of the notification. Each line should be treated as a paragraph.
     /// Simple html markup should be supported, depending on the server implementation.
@@ -156,7 +238,7 @@ impl NotifyData {
         self
     }
 
-    /// Set the `icon` field.
+    /// Implement a method for the `NotifyData` struct to set the icon of the notification.
     ///
     /// You can use common icon names here, usually those in `/usr/share/icons`
     /// can all be used.
@@ -184,6 +266,16 @@ impl NotifyData {
     }
 }
 
+/// Convert f32 to decimal with n decimal places.
+///
+/// # Example
+///
+/// rust // let n = round_f32_dp(123.456, 2)?; // assert_eq!(n, 123.46); // //
+///
+/// # Returns
+///
+/// - A Result with Ok value of Decimal if the conversion is successful.
+/// - A Result with Err value of ParseFloatError if the conversion failed.
 /// Returns a new float with the specified number of decimal points for fractional portion.
 /// Rounding currently follows "Bankers Rounding" rules. e.g. 6.5 -> 6, 7.5 -> 8
 ///

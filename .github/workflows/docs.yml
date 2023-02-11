@@ -48,6 +48,7 @@ jobs:
             git config --local user.name "GitHub Action"
             git commit -m "docs: add index.html and build cargo docs"
             git push origin master
+          github-token: ***
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact

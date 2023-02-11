@@ -16,12 +16,12 @@
 //! ## Description
 //!
 //! * The app module uses the ipapi library to fetch the location of the user, and passes it to the
-//!   fetch_weather_notify method to get the weather data for that location.
+//!   `fetch_weather_notify` method to get the weather data for that location.
 //! * The weather data is then used to display a notification to the user with the summary of the
 //!   weather.
-//! * The OpenWeatherMap API key is retrieved from the environment variables, and the request to the
-//!   OpenWeatherMap API is made using the reqwest library.
-//! * The response body is deserialized as a OpenWeatherData struct using the serde library.
+//! * The `OpenWeatherMap` API key is retrieved from the environment variables, and the request to the
+//!   `OpenWeatherMap` API is made using the reqwest library.
+//! * The response body is deserialized as a `OpenWeatherData` struct using the serde library.
 //!
 //! ## Dependencies
 //!
@@ -37,7 +37,7 @@
 //! The end user may require the following dependencies when extending this crate:
 //!
 //! * `ipapi` library for fetching the user's location.
-//! * `reqwest` library for making HTTP requests to the OpenWeatherMap API.
+//! * `reqwest` library for making HTTP requests to the `OpenWeatherMap` API.
 //! * `serde` library for deserializing the response body from the API as a struct.
 //! * The `WEATHER_API_KEY` environment variable should be set in the `.env` file.
 //!
@@ -52,8 +52,8 @@
 //!
 //! The `fetch_weather_notify` function will return an error in the following cases:
 //!
-//! * WEATHER_API_KEY environment variable not found in .env file.
-//! * Failed to make the request to OpenWeatherMap API.
+//! * `WEATHER_API_KEY` environment variable not found in .env file.
+//! * Failed to make the request to `OpenWeatherMap` API.
 //! * Failed to deserialize the response body as JSON.
 
 mod temperature;
@@ -114,8 +114,8 @@ pub async fn run() -> anyhow::Result<OpenWeatherData> {
 }
 /// `fetch_weather_notify` function fetches the weather data for a specified location.
 ///
-/// It retrieves the OpenWeatherMap API key from the environment variables and then sends a request
-/// to the OpenWeatherMap API to get the weather data for the specified location. The data is then
+/// It retrieves the `OpenWeatherMap` API key from the environment variables and then sends a request
+/// to the `OpenWeatherMap` API to get the weather data for the specified location. The data is then
 /// used to display a notification to the user with the summary of the weather.
 ///
 /// # Errors
@@ -123,7 +123,7 @@ pub async fn run() -> anyhow::Result<OpenWeatherData> {
 /// This function will return an error in the following cases:
 ///
 /// * `WEATHER_API_KEY` environment variable not found in `.env` file.
-/// * Failed to make the request to OpenWeatherMap API.
+/// * Failed to make the request to `OpenWeatherMap` API.
 /// * Failed to deserialize the response body as JSON.
 // $ RUST_BACKTRACE=1 mausam
 // FIXME: embed default API key for when env is not found.
@@ -190,7 +190,7 @@ fn is_err_panic(response: &Response, query: &str) -> bool {
     true
 }
 
-/// Define a struct NotifyData to store the data of the notification to be shown.
+/// Define a struct `NotifyData` to store the data of the notification to be shown.
 /// This is used by the show method to show the notification.
 #[derive(Debug, Default)]
 pub struct NotifyData {
@@ -202,7 +202,7 @@ pub struct NotifyData {
     pub hints: Option<Vec<Hint>>,
 }
 
-/// Implement a method for the NotifyData struct to set the summary of the notification.
+/// Implement a method for the `NotifyData` struct to set the summary of the notification.
 impl NotifyData {
     pub fn new() -> Self {
         Self {
@@ -272,12 +272,12 @@ impl NotifyData {
 ///
 /// # Example
 ///
-/// rust // let n = round_f32_dp(123.456, 2)?; // assert_eq!(n, 123.46); // //
+/// rust // let n = `round_f32_dp(123.456`, 2)?; // `assert_eq!(n`, 123.46); // //
 ///
 /// # Returns
 ///
 /// - A Result with Ok value of Decimal if the conversion is successful.
-/// - A Result with Err value of ParseFloatError if the conversion failed.
+/// - A Result with Err value of `ParseFloatError` if the conversion failed.
 /// Returns a new float with the specified number of decimal points for fractional portion.
 /// Rounding currently follows "Bankers Rounding" rules. e.g. 6.5 -> 6, 7.5 -> 8
 ///
@@ -331,10 +331,10 @@ mod ipapi {
     /// * Return the parsed JSON as the result of the function.
     pub(crate) async fn get_ip_api_location() -> ResultIpApi {
         let response: Response = (CLIENT).get(*IP_API_URL).send().await?;
-        Ok(response.json::<IpApiResponse>().await?)
+        response.json::<IpApiResponse>().await
     }
 
-    /// let location = try_ipapi_location(client, *IP_API_URL).await?;
+    /// let location = `try_ipapi_location(client`, *`IP_API_URL).await`?;
     /// Note that most geolocation APIs have usage limits,
     /// so be mindful of how often you make requests to the API.
     pub(crate) async fn try_ipapi_location(mut client: Client, url: &str) -> ResultIpApi {

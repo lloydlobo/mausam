@@ -66,10 +66,10 @@
 //!
 //! ## Setup
 //!
-//! To use mausam, you need to obtain an API key from OpenWeatherMap. A free account provides a
+//! To use mausam, you need to obtain an API key from `OpenWeatherMap`. A free account provides a
 //! generous request rate per day. Once subscribed, add the API key to your .env file:
 //!
-//! //! WEATHER_API_KEY=<API key> //!
+//! //! `WEATHER_API_KEY`=<API key> //!
 //!
 //! ## Installation
 //!
@@ -81,7 +81,7 @@
 //!
 //! To test the code, run:
 //!
-//! //! CARGO_LOG=error cargo test //!
+//! //! `CARGO_LOG=error` cargo test //!
 //!
 //! ## Troubleshooting
 //!

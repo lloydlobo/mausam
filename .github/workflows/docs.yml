@@ -38,7 +38,7 @@ jobs:
           # TODO: # && rm -rf docs/rustdoc/release && cp docs/rustdoc/doc docs/rustdoc && rm -rf docs/rustdoc/doc
       - name: Create index.html in docs/rustdoc/doc
         run: |
-          echo "<meta http-equiv=\"refresh\" content=\"0; url=mausam\">  \n" > ./docs/rustdoc/doc/index.html
+          echo "<meta http-equiv=\"refresh\" content=\"0; url=mausam\">" > ./docs/rustdoc/doc/index.html
       # - name: Commit and push changes
       #   uses: actions/github-script@v6
       #   with:

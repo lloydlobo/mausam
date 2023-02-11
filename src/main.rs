@@ -10,10 +10,14 @@
 //!
 //! ## Usage
 //!
+//! By default `mausam` will fetch the weather for your current location.
 //! Terminal outputs API response in Kelvin by default, but UI notifications are in Celsius.
-//! To get weather info for a location, run:
 //!
-//! `$ mausam <location>`
+//! To get weather info for a location (<optional>), run:
+//!
+//! ```sh
+//! $ mausam <location>
+//! ```
 //!
 //! Output Example:
 //!
@@ -97,24 +101,19 @@
 //! If your API key doesn't work immediately after subscribing, wait a couple of hours for
 //! activation. You can verify activation status by accessing the API at:
 //!
-//! //! https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid={API key} //!
+//! ```text
+//! https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid={API key}
+//! ````
 //!
 //! If you still face issues or have questions, open an issue on the GitHub repository.
 //! The maintainers will be happy to help.
 //!
 //! ## Examples
 //!
-//! Get weather information for Paris, France:
-//!
-//! //! $ mausam paris //!
-//!
-//! Get weather information for London, United Kingdom:
-//!
-//! //! $ mausam london //!
-//!
-//! Get weather information for New York, United States:
-//!
-//! //! $ mausam new york //!
+//! By default `$ mausam` will fetch the weather for your current location.
+//! Get weather information for Paris, France: `$ mausam paris`
+//! Get weather information for London, United Kingdom: `$ mausam london`
+//! Get weather information for New York, United States: `$ mausam "new york"`
 //!
 //! Note: mausam supports various locations from around the world.
 //!

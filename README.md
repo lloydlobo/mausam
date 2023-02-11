@@ -4,7 +4,7 @@
 [![Deploy Pages](https://github.com/lloydlobo/mausam/actions/workflows/docs.yml/badge.svg)](https://github.com/lloydlobo/mausam/actions/workflows/docs.yml)
 [![rust-clippy analyze](https://github.com/lloydlobo/mausam/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/lloydlobo/mausam/actions/workflows/rust-clippy.yml)
 
-A weather update desktop notifier made with Rust.
+Mausam is a CLI tool that displays the current weather conditions of your location as a desktop notification.
 
 ![mausam](https://github.com/lloydlobo/mausam/blob/master/assets/demo.gif)
 
@@ -17,24 +17,37 @@ A weather update desktop notifier made with Rust.
 
 ## Usage
 
-NOTE: Default temperature is of the unit `Kelvin`.
-The response for the desktop ui notification is converted to relative `Celsius` temperature units.
+### Introduction
 
-### Run mausam with you current location.
+Mausam is a a weather update desktop notifier made with Rust.
+By default, the temperature unit in the response is in Kelvin, but it is converted to Celsius before being displayed in the notification.
+
+### Running Mausam
+
+#### Using Your Current Location
+
+To display the weather conditions of your current location, simply run the following command in your terminal:
 
 ```sh
 $ mausam
 ```
 
-### Run mausam periodically with cron via crontab.
+#### Running Mausam Periodically with Cron
 
-NOTE: The `path/to/mausam` holds the `.env` file with the SECRET `WEATHER_API_KEY`.
-When you install mausam with `cargo`, rust's toolchain, the binary is stored in `/home/user/.cargo/bin/` by default.
+To run Mausam periodically, you can use `cron` via `crontab`.
+You will need to have Mausam installed on your system, which can be done using `cargo`, the Rust's toolchain.
+After installation, the binary will be stored in `/home/<YOUR_USER_NAME>/.cargo/bin/` by default.
+
+Make sure to place the `.env` file in the `path/to/mausam` directory, as this file holds the secret `WEATHER_API_KEY`.
+
+Here's an example of how to run `mausam` every 60 minutes using `crontab`:
 
 ```crontab
 # Run mausam (weather notification cli) every 60 minutes
 */60 * * * * cd ~/path/to/mausam/ && ~/.cargo/bin/mausam
 ```
+
+By following these steps, you can have the current weather conditions of your location, displayed as a desktop notification every hour.
 
 ### Terminal output with API response
 

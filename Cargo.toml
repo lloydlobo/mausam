@@ -20,7 +20,11 @@ include = [
 anyhow = "1.0.68"
 clap = { version = "4.1.4", features = ["derive"] }
 dotenv = "0.15.0"
+geo = "0.23.1"
+geoip = "0.0.14"
+lazy_static = "1.4.0"
 log = "0.4.17"
+maxminddb = "0.23.0"
 notify-rust = "4.7.0"
 pretty_env_logger = "0.4.0"
 reqwest = { version = "0.11", features = ["json"] }
@@ -41,7 +45,16 @@ panic = "abort"
 [profile.release]
 panic = "abort"
 opt-level = 3
-debug = false
 lto = true
 incremental = true
 codegen-units = 1
+# debug = false    # production
+
+debug = true # development perf & flamegraph
+
+# cargo build --release
+# perf record -g --call-graph dwarf target/release/your-program
+# perf report
+
+# You can use cargo flamegraph to build and profile a Rust project by specifying the --build and --profile options. For example:
+# cargo flamegraph --build --profile=release --bin <binary_name>

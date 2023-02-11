@@ -8,22 +8,35 @@ use std::{env, num::ParseFloatError, path::PathBuf};
 use anyhow::{anyhow, Context};
 use clap::Parser;
 use dotenv::dotenv;
+use lazy_static::lazy_static;
 use notify_rust::{Hint, Notification};
-use reqwest::Response;
+use reqwest::{Client, Response};
 use rust_decimal::Decimal;
 
 use crate::{cli::Cli, models::OpenWeatherData};
+
+// Define the URL and the client as lazily loaded statics
+lazy_static! {
+    pub static ref IP_API_URL: &'static str = "http://ip-api.com/json";
+    pub static ref CLIENT: Client = Client::new();
+}
 
 // HACK: Can use RUST_PACKAGE name env?
 pub const APP_NAME: &str = "mausam";
 
 pub async fn run() -> anyhow::Result<OpenWeatherData> {
     dotenv().ok();
+
+    let location = ipapi::get_ip_api_location().await?;
+    let city = location.city;
+    // println!("Your current city is: {city}.");
+
     let mut args = Cli::parse();
-    let place = args.place.get_or_insert("London".to_string());
+    let place = args.place.get_or_insert(city);
     if place.is_empty() {
         panic!("{:#?}", anyhow!("`{place}`").context("Empty string passed for place"));
     }
+
     let data = (fetch_weather_notify(place).await)
         .map_err(|err| err.context("Failed to fetch weather"))?;
 
@@ -178,4 +191,111 @@ impl NotifyData {
 /// * `dp`: the number of decimal points to round to.
 fn round_f32_dp(num: f32, dp: u32) -> anyhow::Result<f32, ParseFloatError> {
     Decimal::from_f32_retain(num).unwrap().round_dp(dp).to_string().parse::<f32>()
+}
+
+mod ipapi {
+    use reqwest::{self, Client, Response};
+    use serde::{Deserialize, Serialize};
+
+    use super::{CLIENT, IP_API_URL};
+
+    pub(crate) type ResultIpApi = anyhow::Result<IpApiResponse, reqwest::Error>;
+
+    #[derive(Deserialize, Debug, Serialize)]
+    pub(crate) struct IpApiResponse {
+        pub(crate) status: String,
+        pub(crate) country: String,
+        #[serde(rename = "countryCode")]
+        pub(crate) country_code: String,
+        pub(crate) region: String,
+        #[serde(rename = "regionName")]
+        pub(crate) region_name: String,
+        pub(crate) city: String,
+        pub(crate) zip: String,
+        pub(crate) lat: f64,
+        pub(crate) lon: f64,
+        pub(crate) timezone: String,
+        pub(crate) isp: String, // The ISP name for the location.
+        pub(crate) org: String, // The organization name for the location.
+        #[serde(rename = "as")]
+        pub(crate) as_: String,
+    }
+
+    /// `get_location` makes a GET request to the `ip-api` API and retrieves the location
+    /// information in JSON format. The JSON response is then deserialized into a struct
+    /// `IpApiResponse` using the serde crate.
+    pub(crate) async fn get_location(client: &mut Client, url: &str) -> ResultIpApi {
+        let response = client.get(url).send().await?;
+        let json = response.json::<IpApiResponse>().await?;
+        Ok(json)
+    }
+
+    /// `get_ip_api_location` fetches the current ip location.
+    ///
+    /// * Use the `CLIENT` static to make the request to the `IP_API_URL`.
+    /// * Extract the JSON from the response and parse it into an `IpApiResponse`.
+    /// * Return the parsed JSON as the result of the function.
+    pub(crate) async fn get_ip_api_location() -> ResultIpApi {
+        let response: Response = (CLIENT).get(*IP_API_URL).send().await?;
+        Ok(response.json::<IpApiResponse>().await?)
+    }
+
+    /// let location = try_ipapi_location(client, *IP_API_URL).await?;
+    /// Note that most geolocation APIs have usage limits,
+    /// so be mindful of how often you make requests to the API.
+    pub(crate) async fn try_ipapi_location(mut client: Client, url: &str) -> ResultIpApi {
+        let location = get_location(&mut client, url).await?;
+        println!("Your current location is: {location:?}");
+        Ok(location)
+    }
+
+    #[test]
+    fn should_rename_fields() {
+        let api_response = IpApiResponse {
+            status: "success".to_string(),
+            country: "United States".to_string(),
+            country_code: "US".to_string(),
+            region: "CA".to_string(),
+            region_name: "California".to_string(),
+            city: "San Francisco".to_string(),
+            zip: "94107".to_string(),
+            lat: 37.7749,
+            lon: -122.4194,
+            timezone: "America/Los_Angeles".to_string(),
+            isp: "Google".to_string(),
+            org: "Google LLC".to_string(),
+            as_: "".to_string(),
+        };
+        assert_eq!(
+            serde_json::to_string(&api_response).unwrap(),
+            "{\"status\":\"success\",\"country\":\"United \
+             States\",\"countryCode\":\"US\",\"region\":\"CA\",\"regionName\":\"California\",\"\
+             city\":\"San \
+             Francisco\",\"zip\":\"94107\",\"lat\":37.7749,\"lon\":-122.4194,\"timezone\":\"\
+             America/Los_Angeles\",\"isp\":\"Google\",\"org\":\"Google LLC\",\"as\":\"\"}"
+        );
+    }
+}
+
+mod archive {
+    use std::net::IpAddr;
+
+    use anyhow::Result;
+    use maxminddb::geoip2;
+
+    fn maxminddb_main() -> Result<(), String> {
+        let mut args = std::env::args().skip(1);
+        let reader = maxminddb::Reader::open_readfile(
+            args.next().ok_or("First argument must be the path to the IP database")?,
+        )
+        .unwrap();
+        let ip: IpAddr = args
+            .next()
+            .ok_or("Second argument must be the IP address, like 128.101.101.101")?
+            .parse()
+            .unwrap();
+        let city: geoip2::City<'_> = reader.lookup(ip).unwrap();
+        println!("{city:#?}");
+        Ok(())
+    }
 }

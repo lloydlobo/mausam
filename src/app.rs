@@ -11,20 +11,22 @@
 //!     let weather = app::run().await.unwrap();
 //!     println!("{}", weather);
 //! }
+//! ```
 //!
 //! ## Description
 //!
-//! * The app module uses the ipapi library to fetch the location of the user,
-//!    and passes it to the fetch_weather_notify method to get the weather data for that location.
-//! * The weather data is then used to display a notification to the user with the summary of the weather.
-//! * The OpenWeatherMap API key is retrieved from the environment variables,
-//!   and the request to the OpenWeatherMap API is made using the reqwest library.
+//! * The app module uses the ipapi library to fetch the location of the user, and passes it to the
+//!   fetch_weather_notify method to get the weather data for that location.
+//! * The weather data is then used to display a notification to the user with the summary of the
+//!   weather.
+//! * The OpenWeatherMap API key is retrieved from the environment variables, and the request to the
+//!   OpenWeatherMap API is made using the reqwest library.
 //! * The response body is deserialized as a OpenWeatherData struct using the serde library.
 //!
 //! ## Dependencies
 //!
-//! To use the mausam library crate, the following dependencies need to be added to the Cargo.toml file:
-//! ```toml
+//! To use the mausam library crate, the following dependencies need to be added to the Cargo.toml
+//! file: ```toml
 //! [dependencies]
 //! anyhow = "^1.0"
 //! tokio = { version = "0.2.22", features = ["full"] }

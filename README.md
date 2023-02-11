@@ -34,17 +34,35 @@ $ mausam
 
 #### Running Mausam Periodically with Cron
 
-To run Mausam periodically, you can use `cron` via `crontab`.
-You will need to have Mausam installed on your system, which can be done using `cargo`, the Rust's toolchain.
-After installation, the binary will be stored in `/home/<YOUR_USER_NAME>/.cargo/bin/` by default.
+##### Pre-requisites
 
-Make sure to place the `.env` file in the `path/to/mausam` directory, as this file holds the secret `WEATHER_API_KEY`.
+- To run Mausam periodically, you can use `cron` via `crontab`. Schedule cron jobs to run on a time interval for the current user. More information: <https://crontab.guru/>.
+
+- You will need to have Mausam installed on your system, which can be done using `cargo`, the Rust's toolchain. After installation, the binary will be stored in `/home/<YOUR_USER_NAME>/.cargo/bin/` by default.
+
+- Make sure to place the `.env` file in the `path/to/mausam` directory, as this file holds the secret `WEATHER_API_KEY`.
+
+##### Usage with `crontab`
 
 Here's an example of how to run `mausam` every 60 minutes using `crontab`:
+
+Edit the crontab file for the current user:
+
+```sh
+$ crontab -e
+```
 
 ```crontab
 # Run mausam (weather notification cli) every 60 minutes
 */60 * * * * cd ~/path/to/mausam/ && ~/.cargo/bin/mausam
+```
+
+Save the file and exit.
+
+Check status with `systemctl`:
+
+```sh
+systemctl status crond.service
 ```
 
 By following these steps, you can have the current weather conditions of your location, displayed as a desktop notification every hour.

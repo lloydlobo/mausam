@@ -17,10 +17,26 @@ A weather update desktop notifier made with Rust.
 
 ## Usage
 
-### Terminal output with API response
-
 NOTE: Default temperature is of the unit `Kelvin`.
 The response for the desktop ui notification is converted to relative `Celsius` temperature units.
+
+### Run mausam with you current location.
+
+```sh
+$ mausam
+```
+
+### Run mausam periodically with cron via crontab.
+
+NOTE: The `path/to/mausam` holds the `.env` file with the SECRET `WEATHER_API_KEY`.
+When you install mausam with `cargo`, rust's toolchain, the binary is stored in `/home/user/.cargo/bin/` by default.
+
+```crontab
+# Run mausam (weather notification cli) every 60 minutes
+*/60 * * * * cd ~/path/to/mausam/ && ~/.cargo/bin/mausam
+```
+
+### Terminal output with API response
 
 ```sh
 $ mausam paris

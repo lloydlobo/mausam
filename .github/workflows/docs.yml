@@ -22,22 +22,32 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    # These steps will build the cargo documentation and store it in the "./docs/doc" folder,
-    # and then the next step will create an "index.html" file in that folder which redirects to the "rssh" page.
-    # After that, it will commit and push these changes to the "master" branch,
-    # configure the GitHub Pages for the repository,
-    # upload the artifact "./docs/doc" and
-    # finally, deploy the documentation to the GitHub Pages.
+    # - Checkout: Checkout the repository's code to the runner's file system.
+    # - Build cargo docs in docs/rustdoc: Build the cargo documentation and store it in the "./docs/rustdoc" folder.
+    # - Create index.html in docs/rustdoc/doc: Create an "index.html" file in the "./docs/rustdoc/doc" folder which redirects to the "mausam" page.
+    # - Commit and push changes: Uses the actions/github-script@v6 action to run a script that stages all changes, sets the user email and name, creates a commit with the message "docs: add index.html and build cargo docs", and pushes the changes to the master branch on the remote repository.
+    # - Setup Pages: Configure the GitHub Pages for the repository.
+    # - Upload artifact: Upload the artifact "./docs/doc".
+    # - Deploy to GitHub Pages: Deploy the documentation to the GitHub Pages.
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Build cargo docs in docs/doc
+      - name: Build cargo docs in docs/rustdoc
         run: |
           cargo doc --no-deps --release --target-dir docs/rustdoc
           # TODO: # && rm -rf docs/rustdoc/release && cp docs/rustdoc/doc docs/rustdoc && rm -rf docs/rustdoc/doc
       - name: Create index.html in docs/rustdoc/doc
         run: |
           echo "<meta http-equiv=\"refresh\" content=\"0; url=mausam\">  \n" > ./docs/rustdoc/doc/index.html
+      - name: Commit and push changes
+        uses: actions/github-script@v6
+        with:
+          script: |
+            git add .
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git commit -m "docs: add index.html and build cargo docs"
+            git push origin master
       - name: Commit and push changes
         uses: actions/github-script@v6
         with:

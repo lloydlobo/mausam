@@ -127,7 +127,7 @@ pub mod tests {
             // An array of possible temperature units to choose from.
             let units = &[TempUnit::Fahrenheit, TempUnit::Celsius, TempUnit::Kelvin];
             // Choose a temperature unit from the array randomly.
-            let unit = g.choose(units).unwrap().clone();
+            let unit = *g.choose(units).unwrap();
             // Return a new instance of `Temperature` with the randomly chosen value and unit.
             Temperature { value, unit }
         }

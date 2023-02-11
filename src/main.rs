@@ -10,10 +10,12 @@
 //!
 //! ## Usage
 //!
-//! By default `mausam` will fetch the weather for your current location.
-//! Terminal outputs API response in Kelvin by default, but UI notifications are in Celsius.
+//! The mausam library will retrieve the weather information for your current location by default.
 //!
-//! To get weather info for a location (<optional>), run:
+//! The API response is displayed in Kelvin (K) in the terminal, while the notifications in the UI
+//! are shown in Celsius (°C).
+//!
+//! To obtain weather information for a specific location (optional), run the following command:
 //!
 //! ```sh
 //! $ mausam <location>

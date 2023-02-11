@@ -3,6 +3,7 @@
 [![CICD](https://github.com/lloydlobo/mausam/actions/workflows/CICD.yml/badge.svg)](https://github.com/lloydlobo/mausam/actions/workflows/CICD.yml)
 [![Deploy Pages](https://github.com/lloydlobo/mausam/actions/workflows/docs.yml/badge.svg)](https://github.com/lloydlobo/mausam/actions/workflows/docs.yml)
 [![rust-clippy analyze](https://github.com/lloydlobo/mausam/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/lloydlobo/mausam/actions/workflows/rust-clippy.yml)
+
 A weather update desktop notifier made with Rust.
 
 ![mausam](https://github.com/lloydlobo/mausam/blob/master/assets/demo.gif)

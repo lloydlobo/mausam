@@ -19,8 +19,8 @@
 //!   `fetch_weather_notify` method to get the weather data for that location.
 //! * The weather data is then used to display a notification to the user with the summary of the
 //!   weather.
-//! * The `OpenWeatherMap` API key is retrieved from the environment variables, and the request to the
-//!   `OpenWeatherMap` API is made using the reqwest library.
+//! * The `OpenWeatherMap` API key is retrieved from the environment variables, and the request to
+//!   the `OpenWeatherMap` API is made using the reqwest library.
 //! * The response body is deserialized as a `OpenWeatherData` struct using the serde library.
 //!
 //! ## Dependencies
@@ -68,7 +68,8 @@ use notify_rust::{Hint, Notification};
 use reqwest::{Client, Response};
 use rust_decimal::Decimal;
 
-use crate::{cli::Cli, models::OpenWeatherData};
+use self::temperature::{TempUnit, Temperature};
+use crate::{cli::Cli, display_tempunit, models::OpenWeatherData};
 
 lazy_static! {
     /// Define the URL as lazily loaded static
@@ -114,9 +115,9 @@ pub async fn run() -> anyhow::Result<OpenWeatherData> {
 }
 /// `fetch_weather_notify` function fetches the weather data for a specified location.
 ///
-/// It retrieves the `OpenWeatherMap` API key from the environment variables and then sends a request
-/// to the `OpenWeatherMap` API to get the weather data for the specified location. The data is then
-/// used to display a notification to the user with the summary of the weather.
+/// It retrieves the `OpenWeatherMap` API key from the environment variables and then sends a
+/// request to the `OpenWeatherMap` API to get the weather data for the specified location. The data
+/// is then used to display a notification to the user with the summary of the weather.
 ///
 /// # Errors
 ///
@@ -166,15 +167,21 @@ async fn fetch_weather_notify(query: &str) -> anyhow::Result<OpenWeatherData> {
         let weather_description =
             format!("{}{}", &weather.description[..1].to_uppercase(), &weather.description[1..]);
         let main = &data.main;
-        let temp = round_f32_dp(temperature::from_k_to_c(main.temp), 2)?;
-        let (temp_min, temp_max) = (
-            temperature::from_k_to_c(main.temp_min).floor(),
-            temperature::from_k_to_c(main.temp_max).ceil(),
-        );
+        let temperature = Temperature::new(main.temp, TempUnit::Kelvin);
+        let celsius = temperature.to_celsius();
+
+        let temp = round_f32_dp(celsius.value, 2)?;
+
+        let temp_min = Temperature::new(main.temp_min, TempUnit::Kelvin).to_celsius().value.floor();
+        let temp_max = Temperature::new(main.temp_max, TempUnit::Kelvin).to_celsius().value.ceil();
+
+        let unit: &str = display_tempunit!(celsius.unit);
 
         NotifyData::new()
-            .with_summary(format!("{query} {temp}°C").as_str())
-            .with_body(format!("{weather_description}... {temp_min}°C / {temp_max}°C").as_str())
+            .with_summary(format!("{query} {temp}{unit}").as_str())
+            .with_body(
+                format!("{weather_description}... {temp_min}{unit} / {temp_max}{unit}").as_str(),
+            )
             .with_icon("weather-few-clouds") // temperature-symbolic. default: alarm
             .show()?;
     }
@@ -391,5 +398,77 @@ mod archive {
         let city: geoip2::City<'_> = reader.lookup(ip).unwrap();
         println!("{city:#?}");
         Ok(())
+    }
+}
+
+mod draft {
+
+    use std::env;
+
+    use anyhow::{anyhow, Context};
+
+    use super::{
+        is_err_panic, round_f32_dp,
+        temperature::{TempUnit, Temperature},
+        NotifyData,
+    };
+    use crate::{display_tempunit, models::OpenWeatherData};
+
+    async fn fetch_weather_notify(query: &str) -> anyhow::Result<OpenWeatherData> {
+        let api_var: &str = "WEATHER_API_KEY";
+        let weather_api_key: String = match env::var(api_var) {
+            Ok(k) => k,
+            Err(err) => {
+                log::error!("Error fetching API key: {:#?}", err);
+                eprintln!("Error: {}", err);
+                std::process::exit(1);
+            }
+        };
+        let url = format!(
+            "https://api.openweathermap.org/data/2.5/weather?q={query}&appid={weather_api_key}"
+        );
+        let data: OpenWeatherData = reqwest::get(&url)
+            .await
+            .into_iter()
+            .find(|response| is_err_panic(response, query))
+            .unwrap()
+            .json()
+            .await
+            .map_err(|e| anyhow!("Error deserializing JSON: {}", e))?;
+        let weather = &data
+            .weather
+            .as_ref()
+            .context(anyhow!("Error parsing weather: {:?}", &data.weather))?
+            .first()
+            .context("Error getting first weather vec item")?;
+
+        let reponse_unit = TempUnit::Kelvin;
+        let temp_all = [data.main.temp, data.main.temp_min, data.main.temp_max]
+            .iter()
+            .map(|temp| {
+                let temperature = Temperature::new(*temp, reponse_unit).to_celsius();
+                let value = round_f32_dp(temperature.value, 2)?;
+                let unit = display_tempunit!(temperature.unit);
+                Ok(format!("{value}{unit}", value = value, unit = unit))
+            })
+            .collect::<anyhow::Result<Vec<_>>>()?;
+
+        let summary = format!("{query} {temp_curr}", temp_curr = temp_all[0]);
+        let weather_description = format!(
+            "{}{}... {temp_min} / {temp_max}",
+            &weather.description[..1].to_uppercase(),
+            &weather.description[1..],
+            temp_min = temp_all[1],
+            temp_max = temp_all[2]
+        );
+        let icon = "weather-few-clouds";
+
+        NotifyData::new()
+            .with_summary(&summary)
+            .with_body(&weather_description)
+            .with_icon(icon)
+            .show()?;
+
+        Ok(data)
     }
 }

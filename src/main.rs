@@ -1,6 +1,6 @@
 //! `mausam` - A Rust weather notifier app
 //!
-//! `mausam` provides current weather updates for a given location.
+//! `mausam` provides current weather updates for your current location or for a given location.
 //!
 //! ## Features
 //!

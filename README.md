@@ -1,6 +1,7 @@
 # mausam
 
 [![CICD](https://github.com/lloydlobo/mausam/actions/workflows/CICD.yml/badge.svg)](https://github.com/lloydlobo/mausam/actions/workflows/CICD.yml)
+[![Deploy Pages](https://github.com/lloydlobo/mausam/actions/workflows/docs.yml/badge.svg)](https://github.com/lloydlobo/mausam/actions/workflows/docs.yml)
 
 A weather update desktop notifier made with Rust.
 

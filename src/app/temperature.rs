@@ -1,7 +1,4 @@
-use std::{
-    convert::{From},
-    fmt,
-};
+use std::{convert::From, fmt};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum TempUnit {

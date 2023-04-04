@@ -10,8 +10,10 @@ of your current or any custom location as a desktop notification.
 ![mausam](https://github.com/lloydlobo/mausam/blob/master/assets/demo.gif)
 
 <!--toc:start-->
+
 - [mausam](#mausam)
   - [Features](#features)
+  - [Examples](#examples)
   - [Setup](#setup)
     - [API](#api)
   - [Installation](#installation)
@@ -32,13 +34,22 @@ of your current or any custom location as a desktop notification.
     - [API key doesn't work right after subscribing](#api-key-doesnt-work-right-after-subscribing)
   - [Origin of the name](#origin-of-the-name)
   - [License](#license)
-<!--toc:end-->
+  <!--toc:end-->
 
 ## Features
 
 - Cross-platform
 - Supports arbitrary shell commands.
 - Constant feedback about the weather updates (`todo` current forecasts).
+
+## Examples
+
+By default `$ mausam` will fetch the weather for your current location.
+Get weather information for Paris, France: `$ mausam paris`
+Get weather information for London, United Kingdom: `$ mausam london`
+Get weather information for New York, United States: `$ mausam "new york"`
+
+Note: mausam supports various locations from around the world.
 
 ## Setup
 
@@ -101,7 +112,7 @@ Before you can run Mausam periodically with cron, you must meet the following re
 - Have `crontab` installed on your system
 - Have Mausam installed on your system, with `Cargo`, the Rust's toolchain.
   - After installation, /home/<YOUR_USER_NAME>/.cargo/bin/` contains the binary
-  by default.
+    by default.
 - Place the `.env` file in the `path/to/mausam` directory, as this file holds
   the secret `WEATHER_API_KEY`.
 

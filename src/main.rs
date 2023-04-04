@@ -1,27 +1,117 @@
-//! `mausam` - A Rust weather notifier app
+//! # `mausam` - A Rust weather notifier app
 //!
-//! `mausam` provides current weather updates for your current location or for a given location.
+//! Mausam is a CLI tool that displays the current weather conditions
+//! of your current or any custom location as a desktop notification.
 //!
 //! ## Features
 //!
-//! - Cross-platform support.
-//! - Runs shell commands.
-//! - Constantly updated weather info, including current forecast.
+//! - Cross-platform
+//! - Supports arbitrary shell commands.
+//! - Constant feedback about the weather updates (`todo` current forecasts).
+//!
+//! ## Examples
+//!
+//! By default `$ mausam` will fetch the weather for your current location.
+//! Get weather information for Paris, France: `$ mausam paris`
+//! Get weather information for London, United Kingdom: `$ mausam london`
+//! Get weather information for New York, United States: `$ mausam "new york"`
+//!
+//! Note: mausam supports various locations from around the world.
+//!
+//! ## Setup
+//!
+//! ### API
+//!
+//! You need to get a API key from [OpenWeatherMap](https://openweathermap.org/api)
+//! which is free for a generous request rate puota per day.
+//!
+//! After subscribing add it to the `.env` file in your root OR home directory
+//! as `<your API key>` without `<`/`>`.
+//!
+//! ```bashls
+//! WEATHER_API_KEY=<your API key>
+//! ```
+//!
+//! ## Installation
+//!
+//! ### Installation Prerequisites
+//!
+//! Make sure you also have the **development packages of openssl** installed.
+//! For example, `libssl-dev` on Ubuntu or `openssl-devel` on Fedora.
+//!
+//! ### From Source
+//!
+//! ```sh
+//! git clone https://github.com/lloydlobo/mausam.git
+//! cd mausam
+//! cargo build --release
+//! cargo install --path .
+//! ```
 //!
 //! ## Usage
 //!
-//! The mausam library will retrieve the weather information for your current location by default.
+//! ### Introduction
 //!
-//! The API response is displayed in Kelvin (K) in the terminal, while the notifications in the UI
-//! are shown in Celsius (°C).
+//! Mausam is a weather update desktop notifier made with Rust.
+//! By default, the temperature unit in the response is in Kelvin, but
+//! converted to Celsius before displayed in the notification UI.
 //!
-//! To obtain weather information for a specific location (optional), run the following command:
+//! ### Running Mausam
+//!
+//! #### Using Your Current Location
+//!
+//! To display the weather conditions of your current location,
+//! run the following command in your terminal:
 //!
 //! ```sh
-//! $ mausam <location>
+//! mausam
 //! ```
 //!
-//! Output Example:
+//! #### Running Mausam Periodically with Cron
+//!
+//! Schedule cron jobs to run on a time interval for the current user.
+//! More information: [https://crontab.guru/](https://crontab.guru/).
+//!
+//! ##### Cron Prerequisites
+//!
+//! Before you can run Mausam periodically with cron, you must meet the following requirements:
+//!
+//! - Have `crontab` installed on your system
+//! - Have Mausam installed on your system, with `Cargo`, the Rust's toolchain.
+//!   - After installation, /home/<YOUR_USER_NAME>/.cargo/bin/` contains the binary
+//!   by default.
+//! - Place the `.env` file in the `path/to/mausam` directory, as this file holds the secret
+//!   `WEATHER_API_KEY`.
+//!
+//! ##### Usage with `crontab`
+//!
+//! To run `mausam` every 60 minutes using `crontab`, follow these steps:
+//!
+//! - Edit the crontab file for the current user:
+//!
+//!   ```sh
+//!   crontab -e
+//!   ```
+//!
+//! - Add the following line to the file:
+//!
+//!   ```crontab
+//!   # Run mausam (weather notification cli) every 60 minutes
+//!   */60 * * * * cd ~/path/to/mausam/ && ~/.cargo/bin/mausam
+//!   ```
+//!
+//! - Save the file and exit your editor.
+//!
+//! - Check the status of `crontab` with `systemctl`:
+//!
+//!   ```sh
+//!   systemctl status crond.service
+//!   ```
+//!
+//! By following these steps, you can have the current weather conditions of your
+//! location displayed as a desktop notification every hour.
+//!
+//! ### Terminal output with API response
 //!
 //! ```sh
 //! $ mausam paris
@@ -70,59 +160,43 @@
 //! }
 //! ```
 //!
-//! ## Setup
+//! ## Dev
 //!
-//! To use mausam, you need to obtain an API key from `OpenWeatherMap`. A free account provides a
-//! generous request rate per day. Once subscribed, add the API key to your `.env` file:
-//!
-//! ```text
-//! WEATHER_API_KEY`=<API key>
-//! ```
-//!
-//! ## Installation
-//!
-//! To install mausam from source, follow these steps:
-//!
-//! ```sh
-//! git clone https://github.com/lloydlobo/mausam.git
-//! cd mausam
-//! cargo build --release
-//! cargo install --path .
-//! ```
-//!
-//! ## Development
-//!
-//! To test the code, run:
+//! ### Test
 //!
 //! ```sh
 //! CARGO_LOG=error cargo test
 //! ```
 //!
+//! ### PERF
+//!
+//! ```sh
+//! RUST_BACKTRACE=1 mausam
+//! ```
+//!
 //! ## Troubleshooting
 //!
-//! If your API key doesn't work immediately after subscribing, wait a couple of hours for
-//! activation. You can verify activation status by accessing the API at:
+//! ### API key doesn't work right after subscribing
 //!
-//! ```text
-//! https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid={API key}
-//! ````
+//! > Your API key is not activated yet. Within the next couple of hours,
+//! > it will be activated and ready to use.
+//! > `https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid={API key}`
 //!
 //! If you still face issues or have questions, open an issue on the GitHub repository.
 //! The maintainers will be happy to help.
 //!
-//! ## Examples
+//! ## Origin of the name
 //!
-//! By default `$ mausam` will fetch the weather for your current location.
-//! Get weather information for Paris, France: `$ mausam paris`
-//! Get weather information for London, United Kingdom: `$ mausam london`
-//! Get weather information for New York, United States: `$ mausam "new york"`
+//! The name `mausam` is in reference to the borrowed name from
+//! Persian `موسم` (mousem), and from Arabic `مَوْسِم`(mawsim). which means weather.
 //!
-//! Note: mausam supports various locations from around the world.
+//! ## License
 //!
-//! ## Origin of the name `mausam`
+//! `mausam` is dual-licensed under the terms of the MIT License
+//! and the Apache License 2.0.
 //!
-//! The name mausam is borrowed from Persian "موسم" (mousem) and Arabic "مَوْسِم" (mawsim), meaning
-//! "weather".
+//! See the [LICENSE-APACHE](LICENSE-APACHE)
+//! and [LICENSE-MIT](LICENSE-MIT) files for details.
 
 mod app;
 mod cli;
@@ -159,4 +233,3 @@ async fn main() -> anyhow::Result<()> {
 // TODO:
 // ./mausam: error while loading shared libraries: libssl.so.1
 // .1: cannot open shared object file: No such file or directory
-//
